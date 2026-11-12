@@ -77,10 +77,10 @@ local function OnUpdate(eventFrame, elapsedSeconds)
     accumulatedTime = 0
     local movement,
         status = ReadMovement()
-    local stepsChanged   = counter:Sample(sampleElapsed, movement)
+    local progressChanged = counter:Sample(sampleElapsed, movement)
     local statusChanged  = addon.status ~= status
     addon.status = status
-    if stepsChanged or statusChanged then
+    if progressChanged or statusChanged then
         addon.UI:Refresh()
     end
 end

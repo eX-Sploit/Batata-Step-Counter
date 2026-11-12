@@ -69,8 +69,19 @@ function UI:Refresh()
     if textWidth > availableWidth then
         self.steps:SetFont(fontPath, math.max(1, math.floor(28 * availableWidth / textWidth)), "OUTLINE")
     end
-    self.status:SetText(addon.status or (database.paused and "Paused" or "Tracking"))
-    self.status:SetTextColor(database.paused and 0.65 or 1, database.paused and 0.65 or 0.82, database.paused and 0.65 or 0)
+    local kilometers, miles = addon.Counter:GetDistance()
+    self.distance:SetText(string.format("%.2f km / %.2f mi", kilometers, miles))
+    local distanceFont = self.distance:GetFont()
+    self.distance:SetFont(distanceFont, 12)
+    local distanceWidth = self.distance:GetStringWidth()
+    if distanceWidth > availableWidth then
+        self.distance:SetFont(distanceFont, math.max(1, math.floor(12 * availableWidth / distanceWidth)))
+    end
+    self.distance:SetTextColor(database.paused and 0.65 or 1, database.paused and 0.65 or 0.82, database.paused and 0.65 or 0)
+    self.frame.tooltipText = "Estimated on-foot distance\n" .. (addon.status or (database.paused and "Paused" or "Tracking"))
+    if GameTooltip:IsOwned(self.frame) then
+        GameTooltip:SetText(self.frame.tooltipText)
+    end
     self.playButton.playIcon:SetShown(database.paused)
     self.playButton.pauseLeft:SetShown(not database.paused)
     self.playButton.pauseRight:SetShown(not database.paused)
@@ -117,6 +128,7 @@ function UI:Build()
     frame:SetFrameStrata("MEDIUM")
     frame:SetToplevel(true)
     frame:EnableMouse(true)
+    Tooltip(frame)
     frame:RegisterForDrag("LeftButton")
     frame:SetScript("OnDragStart", frame.StartMoving)
     frame:SetScript("OnDragStop", function(control)
@@ -143,9 +155,10 @@ function UI:Build()
     self.steps:SetJustifyH("CENTER")
     self.steps:SetWordWrap(false)
 
-    self.status = inset:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-    self.status:SetPoint("TOP", frame, "TOP", 0, -96)
-    self.status:SetSize(206, 12)
+    self.distance = inset:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+    self.distance:SetPoint("TOP", frame, "TOP", 0, -96)
+    self.distance:SetSize(206, 12)
+    self.distance:SetWordWrap(false)
 
     self.playButton = CreateFrame("Button", nil, frame, "UIPanelButtonTemplate")
     self.playButton:SetSize(30, 22)
@@ -168,7 +181,7 @@ function UI:Build()
     self.resetButton.icon:SetTexture("Interface\\Buttons\\UI-RefreshButton")
     self.resetButton.icon:SetSize(16, 16)
     self.resetButton.icon:SetPoint("CENTER")
-    self.resetButton.tooltipText = "Reset steps"
+    self.resetButton.tooltipText = "Reset steps and distance"
     self.resetButton:SetScript("OnClick", function()
         addon:Reset()
     end)

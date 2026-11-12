@@ -5,6 +5,8 @@ local Counter = {}
 addon.Counter = Counter
 
 local YARDS_PER_STEP       = 1.5
+local KILOMETERS_PER_YARD  = 0.0009144
+local YARDS_PER_MILE       = 1760
 local MAX_SAMPLE_INTERVAL  = 0.5
 local MAX_POSITION_SPEED   = 50
 local previousMovement
@@ -38,6 +40,12 @@ function Counter:Reset()
     self.database.steps        = 0
     self.database.partialStep  = 0
     self:ClearMovement()
+end
+
+function Counter:GetDistance()
+    -- Include the partial step to preserve the original movement distance.
+    local distanceYards = (self.database.steps + self.database.partialStep) * YARDS_PER_STEP
+    return distanceYards * KILOMETERS_PER_YARD, distanceYards / YARDS_PER_MILE
 end
 
 function Counter:Sample(elapsedSeconds, movement)
@@ -91,5 +99,5 @@ function Counter:Sample(elapsedSeconds, movement)
     local wholeSteps  = math.floor(totalSteps)
     self.database.steps        = self.database.steps + wholeSteps
     self.database.partialStep  = totalSteps - wholeSteps
-    return wholeSteps > 0
+    return distanceYards > 0
 end

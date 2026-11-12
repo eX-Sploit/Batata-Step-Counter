@@ -1,8 +1,8 @@
 ## Interface: 16001
 ## Title: |cffffcc66Batata Step Counter|r
-## Notes: A compact per-character counter for estimated steps taken on foot.
+## Notes: A compact per-character counter for estimated steps and on-foot distance in kilometers and miles.
 ## Author: Rani
-## Version: 1.0.0
+## Version: 1.1.0
 ## SavedVariablesPerCharacter: Batata_Step_Counter_DB
 ## IconTexture: Interface\AddOns\Batata Step Counter\Assets\batata-step-counter.tga
 ## X-Category: Miscellaneous
